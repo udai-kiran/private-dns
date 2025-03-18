@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: unbound
+  namespace: private-dns
+  labels:
+    app: unbound
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: unbound
+  template:
+    metadata:
+      labels:
+        app: unbound
+    spec:
+      containers:
+      - name: unbound
+        image: mvance/unbound:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "200m"
+            memory: "256Mi"
+        ports:
+        - containerPort: 8053
+          protocol: TCP
+          name: dns-tcp
+        - containerPort: 8053
+          protocol: UDP
+          name: dns-udp
+        livenessProbe:
+          tcpSocket:
+            port: 8053
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          tcpSocket:
+            port: 8053
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        volumeMounts:
+        - name: unbound-data
+          mountPath: /opt/unbound/etc/unbound
+        - name: unbound-config
+          mountPath: /opt/unbound/etc/unbound.conf
+          subPath: unbound.conf
+        - name: pihole-config
+          mountPath: /opt/unbound/etc/pi-hole.conf
+          subPath: pi-hole.conf
+      volumes:
+      - name: unbound-data
+        persistentVolumeClaim:
+          claimName: unbound-data
+      - name: unbound-config
+        configMap:
+          name: unbound-config
+      - name: pihole-config
+        configMap:
+          name: pihole-config

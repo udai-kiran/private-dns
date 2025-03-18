@@ -1,0 +1,10 @@
+apiVersion: v1
+data:
+  02-custom.conf: |
+    # No custom domains configured
+    # Example (commented out):
+    # address=/foo.bar/192.168.178.10
+kind: ConfigMap
+metadata:
+  name: pihole-custom-dnsmasq
+  namespace: private-dns
