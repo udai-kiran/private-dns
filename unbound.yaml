@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: unbound
-        image: mvance/unbound:latest
+        image: udaikiran/unbound:0.0.1
         imagePullPolicy: Always
         resources:
           limits:
@@ -43,22 +43,3 @@ spec:
             port: 8053
           initialDelaySeconds: 5
           periodSeconds: 10
-        volumeMounts:
-        - name: unbound-data
-          mountPath: /opt/unbound/etc/unbound
-        - name: unbound-config
-          mountPath: /opt/unbound/etc/unbound.conf
-          subPath: unbound.conf
-        - name: pihole-config
-          mountPath: /opt/unbound/etc/pi-hole.conf
-          subPath: pi-hole.conf
-      volumes:
-      - name: unbound-data
-        persistentVolumeClaim:
-          claimName: unbound-data
-      - name: unbound-config
-        configMap:
-          name: unbound-config
-      - name: pihole-config
-        configMap:
-          name: pihole-config
